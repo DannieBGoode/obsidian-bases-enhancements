@@ -93,13 +93,13 @@ Requires **Obsidian 1.14.4 or later** with the **Bases** core plugin enabled. Yo
 
 Bases Enhancements is not listed in Obsidian's Community plugins directory yet.
 
-### Download a build
+### Download the latest release
 
-1. Open the latest successful [CI run](https://github.com/DannieBGoode/obsidian-bases-enhancements/actions/workflows/ci.yml) and download the **bases-enhancements** artifact. GitHub requires you to be signed in to download workflow artifacts.
-2. Extract `main.js`, `manifest.json`, and `styles.css` into `<your-vault>/.obsidian/plugins/bases-view-favorites/`.
+1. Open the [latest release](https://github.com/DannieBGoode/obsidian-bases-enhancements/releases/latest) and download `main.js`, `manifest.json`, and `styles.css` from **Assets**.
+2. Place the three files in `<your-vault>/.obsidian/plugins/bases-view-favorites/`.
 3. Reload Obsidian, then enable **Bases Enhancements** under **Settings → Community plugins**.
 
-The plugin keeps its original `bases-view-favorites` ID so existing installations and command bindings continue to work. When releases are available, download the same three files from [Releases](https://github.com/DannieBGoode/obsidian-bases-enhancements/releases).
+The plugin keeps its original `bases-view-favorites` ID so existing installations and command bindings continue to work.
 
 ### Build from source
 
@@ -114,6 +114,10 @@ node scripts/install.mjs "/path/to/your/vault"
 ```
 
 Reload Obsidian and enable **Bases Enhancements** under **Settings → Community plugins**. The installer copies the build from `dist/`. Add `--enable` to also add the plugin to the vault's enabled plugin list for the next reload.
+
+## Privacy
+
+Bases Enhancements works locally inside your vault. It makes no network requests, collects no telemetry, and requires no account or external service. It saves view preferences in your `.base` files.
 
 ## Storage and compatibility
 

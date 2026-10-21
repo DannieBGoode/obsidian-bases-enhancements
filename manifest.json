@@ -3,7 +3,7 @@
   "name": "Bases Enhancements",
   "version": "0.1.0",
   "minAppVersion": "1.14.4",
-  "description": "Centered favorite tabs and compact Kanban cards for Obsidian Bases.",
+  "description": "Star your favorite Bases views, switch between centered tabs, and keep Kanban boards compact with hidden empty fields.",
   "author": "DannieBGoode",
   "isDesktopOnly": false
 }

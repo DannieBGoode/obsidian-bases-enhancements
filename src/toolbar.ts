@@ -24,7 +24,7 @@ export class FavoritesBar {
     const toolbar = controller.viewHeaderEl.querySelector<HTMLElement>('.bases-toolbar')!;
     this.kanban = new KanbanEnhancements(controller);
     const doc = toolbar.ownerDocument;
-    this.bar = doc.createElement('div');
+    this.bar = toolbar.createDiv();
     this.bar.className = 'bvf-bar';
     this.bar.setAttribute('role', 'tablist');
     this.bar.setAttribute('aria-label', 'Starred views');
@@ -92,7 +92,7 @@ export class FavoritesBar {
   }
 
   private createTab(name: string): HTMLButtonElement {
-    const button = this.bar.ownerDocument.createElement('button');
+    const button = this.bar.createEl('button');
     button.type = 'button';
     button.className = 'bvf-tab';
     button.dataset.viewName = name;
@@ -264,7 +264,7 @@ export class FavoritesBar {
         if (!row) return;
         let button = row.querySelector<HTMLButtonElement>('.bvf-star');
         if (!button) {
-          button = row.ownerDocument.createElement('button');
+          button = row.createEl('button', { prepend: true });
           button.type = 'button';
           button.className = 'clickable-icon bvf-star';
           button.addEventListener('mousedown', event => { event.preventDefault(); event.stopPropagation(); });
