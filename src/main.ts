@@ -4,7 +4,7 @@ import { isNativeController, NativeController, visitComponents } from './native'
 import { afterMethod } from './patch';
 import { favoriteOrder, setStarred } from './favorites';
 
-export default class BasesViewFavorites extends Plugin {
+export default class BasesEnhancements extends Plugin {
   private readonly bars = new Map<NativeController, FavoritesBar>();
   private active = false;
   private warned = false;
@@ -34,10 +34,10 @@ export default class BasesViewFavorites extends Plugin {
         }
         bar.render();
       } catch (error) {
-        console.error('Bases View Favorites: unable to update navigation', error);
+        console.error('Bases Enhancements: unable to update navigation', error);
         if (!this.warned) {
           this.warned = true;
-          new Notice('Bases View Favorites could not attach to this version of Bases. Native views remain available.');
+          new Notice('Bases Enhancements could not attach to this version of Bases. Native views remain available.');
         }
       }
     };

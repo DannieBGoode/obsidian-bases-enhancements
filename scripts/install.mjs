@@ -27,4 +27,4 @@ if (enabled && !enabled.includes(manifest.id)) {
   await fs.writeFile(enabledPath, JSON.stringify([...enabled, manifest.id], null, 2) + '\n');
 }
 console.log(`Installed ${manifest.name} ${manifest.version} to ${target}`);
-console.log(enabled ? 'Reload Obsidian to activate the plugin.' : 'Enable Bases View Favorites in Settings > Community plugins.');
+console.log(enabled ? 'Reload Obsidian to activate the plugin.' : `Enable ${manifest.name} in Settings > Community plugins.`);

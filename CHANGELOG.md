@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Rename the plugin to Bases Enhancements while keeping its existing installation ID.
+- Document and verify native folder-aware note creation across built-in layouts.
 - Hide empty native Kanban fields with a per-view Configure view toggle, collapsing their space and card height.
 - Highlight clickable Kanban cards on hover and keyboard focus.
 

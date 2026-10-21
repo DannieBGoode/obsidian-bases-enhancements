@@ -1,8 +1,10 @@
 import fs from 'node:fs/promises';
-const args = process.argv.slice(2).filter(arg => arg !== '--kanban-only');
+const args = process.argv.slice(2).filter(arg => arg !== '--kanban-only' && arg !== '--creation-only');
 const port = Number(args[0] ?? 9237);
-const expectedVault = args[1] ?? 'Bases View Favorites QA';
+const expectedVault = args[1] ?? 'Bases Enhancements QA';
 const kanbanOnly = process.argv.includes('--kanban-only');
+const creationOnly = process.argv.includes('--creation-only');
+if (kanbanOnly && creationOnly) throw new Error('Choose one native test subset');
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Expected a valid loopback debugging port');
 const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
 const target = targets.find(entry => entry.type === 'page' && entry.url === 'app://obsidian.md/index.html');
@@ -35,7 +37,7 @@ function send(method, params = {}) {
 
 async function smoke(vaultName) {
   if (app.vault.getName() !== vaultName) throw new Error(`Refusing to modify ${app.vault.getName()}; expected disposable vault ${vaultName}`);
-  if (!app.plugins.plugins['bases-view-favorites']) throw new Error('Install and enable Bases View Favorites first');
+  if (!app.plugins.plugins['bases-view-favorites']) throw new Error('Install and enable Bases Enhancements first');
   const checks = [];
   const assert = (condition, message) => { if (!condition) throw new Error(message); checks.push(message); };
   const wait = (ms = 100) => new Promise(resolve => setTimeout(resolve, ms));
@@ -308,6 +310,56 @@ async function kanbanSmoke(vaultName) {
   return { sample: base.path, checks };
 }
 
+async function creationSmoke(vaultName) {
+  if (app.vault.getName() !== vaultName) throw new Error('Expected disposable vault');
+  const checks = [];
+  const assert = (value, message) => { if (!value) throw new Error(message); checks.push(message); };
+  const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const folder = `_bases-creation-${Date.now()}`;
+  const projects = `${folder}/Projects`, work = `${folder}/Work`, reading = `${folder}/Reading`;
+  for (const path of [projects, work, reading]) await app.vault.createFolder(path);
+  const wasEnabled = !!app.plugins.plugins['bases-view-favorites'];
+  if (wasEnabled) await app.plugins.disablePlugin('bases-view-favorites');
+  let controller;
+  try {
+    const base = await app.vault.create(`${folder}/Creation.base`, JSON.stringify({
+      filters: 'file.ext == "md"',
+      views: [
+        { name: 'Projects', type: 'table', filters: { and: [`file.inFolder(${JSON.stringify(projects)})`, 'Source == "Home"'] } },
+        { name: 'Work', type: 'kanban', filters: { and: [`file.inFolder(${JSON.stringify(work)})`, 'Source == "Work"'] }, groupBy: { property: 'Status', direction: 'ASC' } },
+        { name: 'Reading', type: 'cards', filters: `file.folder == ${JSON.stringify(reading)}` },
+        { name: 'Project list', type: 'list', filters: `file.inFolder(${JSON.stringify(projects)})` },
+      ]
+    }, null, 2));
+    const leaf = app.workspace.getLeaf('tab');
+    await leaf.openFile(base);
+    controller = leaf.view.controller;
+    const create = async (viewName, target, source) => {
+      controller.selectView(viewName);
+      for (let i = 0; i < 60 && controller.newItemMenu.viewConfig?.name !== viewName; i++) await wait(50);
+      assert(controller.newItemMenu.viewConfig?.name === viewName, `${viewName} creation uses the selected view`);
+      controller.newItemMenu.button.buttonEl.click();
+      for (let i = 0; i < 60 && !controller.newItemMenu.newlyCreatedFile; i++) await wait(50);
+      const file = controller.newItemMenu.newlyCreatedFile;
+      assert(file?.parent?.path === target, `Native New creates ${viewName} notes in its filtered folder`);
+      if (source) assert((await app.vault.read(file)).includes(`Source: ${source}`), `${viewName} creation retains native property defaults`);
+      controller.newItemMenu.close();
+    };
+    await create('Projects', projects, 'Home');
+    await create('Work', work, 'Work');
+    await create('Reading', reading);
+    await create('Project list', projects);
+    await create('Projects', projects, 'Home');
+    controller.query.setGlobalFilters(`file.inFolder(${JSON.stringify(reading)})`);
+    controller.query.setViewFilters('Project list', 'file.ext == "md"');
+    await create('Project list', reading);
+  } finally {
+    controller?.newItemMenu.close();
+    if (wasEnabled) await app.plugins.enablePlugin('bases-view-favorites');
+  }
+  return { folder, checks };
+}
+
 try {
   const evaluate = async expression => {
     const response = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true, userGesture: true });
@@ -315,7 +367,7 @@ try {
     return response.result.value;
   };
   let report = { vault: expectedVault, checks: [] };
-  if (!kanbanOnly) {
+  if (!kanbanOnly && !creationOnly) {
     const result = await send('Runtime.evaluate', {
       expression: `(${smoke.toString()})(${JSON.stringify(expectedVault)})`,
       awaitPromise: true,
@@ -381,23 +433,30 @@ try {
       await send('Input.setInterceptDrags', { enabled: false });
     }
   }
-  const kanbanReport = await evaluate(`(${kanbanSmoke.toString()})(${JSON.stringify(expectedVault)})`);
-  report.checks.push(...kanbanReport.checks);
-  report.kanbanSample = kanbanReport.sample;
-  const firstCard = "kanbanSmokeController.view.columns[0].items.find(item => item.entry?.file.basename === '01 Filled').el";
-  await send('Page.captureScreenshot');
-  await send('Page.bringToFront');
-  await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 2, y: 2 });
-  const background = await evaluate(`getComputedStyle(${firstCard}).backgroundColor`);
-  const box = await evaluate(`(${firstCard}).getBoundingClientRect().toJSON()`);
-  await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x + box.width / 2, y: box.y + 10 });
-  await new Promise(resolve => setTimeout(resolve, 160));
-  const hover = await evaluate(`({background:getComputedStyle(${firstCard}).backgroundColor,cursor:getComputedStyle(${firstCard}).cursor})`);
-  if (background === hover.background || hover.cursor !== 'pointer') throw new Error('Kanban hover did not highlight the clickable card');
-  report.checks.push('Trusted mouse hover highlights clickable Kanban cards');
-  const compactReport = await evaluate(`(${compactKanbanSmoke.toString()})(${JSON.stringify(expectedVault)})`);
-  report.checks.push(...compactReport.checks);
-  report.compactSample = compactReport.sample;
+  if (!creationOnly) {
+    const kanbanReport = await evaluate(`(${kanbanSmoke.toString()})(${JSON.stringify(expectedVault)})`);
+    report.checks.push(...kanbanReport.checks);
+    report.kanbanSample = kanbanReport.sample;
+    const firstCard = "kanbanSmokeController.view.columns[0].items.find(item => item.entry?.file.basename === '01 Filled').el";
+    await send('Page.captureScreenshot');
+    await send('Page.bringToFront');
+    await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 2, y: 2 });
+    const background = await evaluate(`getComputedStyle(${firstCard}).backgroundColor`);
+    const box = await evaluate(`(${firstCard}).getBoundingClientRect().toJSON()`);
+    await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x + box.width / 2, y: box.y + 10 });
+    await new Promise(resolve => setTimeout(resolve, 160));
+    const hover = await evaluate(`({background:getComputedStyle(${firstCard}).backgroundColor,cursor:getComputedStyle(${firstCard}).cursor})`);
+    if (background === hover.background || hover.cursor !== 'pointer') throw new Error('Kanban hover did not highlight the clickable card');
+    report.checks.push('Trusted mouse hover highlights clickable Kanban cards');
+    const compactReport = await evaluate(`(${compactKanbanSmoke.toString()})(${JSON.stringify(expectedVault)})`);
+    report.checks.push(...compactReport.checks);
+    report.compactSample = compactReport.sample;
+  }
+  if (!kanbanOnly) {
+    const creationReport = await evaluate(`(${creationSmoke.toString()})(${JSON.stringify(expectedVault)})`);
+    report.checks.push(...creationReport.checks);
+    report.creationFolder = creationReport.folder;
+  }
   console.log(JSON.stringify(report, null, 2));
   const screenshot = await send('Page.captureScreenshot');
   const output = new URL('../.test-build/native-smoke.png', import.meta.url);

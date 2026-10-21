@@ -19,7 +19,7 @@ function withVault(enabledJson: string | undefined, check: (fixture: {
     const dist = path.join(directory, 'dist');
     mkdirSync(dist);
     for (const [name, content] of Object.entries({
-      'manifest.json': JSON.stringify({ id: 'bases-view-favorites', name: 'Bases View Favorites', version: '0.1.0' }),
+      'manifest.json': JSON.stringify({ id: 'bases-view-favorites', name: 'Bases Enhancements', version: '0.1.0' }),
       'main.js': 'example build',
       'styles.css': 'example styles',
       'versions.json': '{}'

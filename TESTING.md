@@ -13,13 +13,13 @@ The unit suite covers favorite metadata, layout independence, ordering, renamed 
 
 ## Real Obsidian smoke tests
 
-Use a disposable vault named **Bases View Favorites QA**. The smoke script creates sample notes and bases in the connected vault and refuses to run if its name differs from the expected name.
+Use a disposable vault named **Bases Enhancements QA**. The smoke script creates sample notes and bases in the connected vault and refuses to run if its name differs from the expected name.
 
 1. Build the plugin and install it into the disposable vault:
 
    ```sh
    npm run build
-   node scripts/install.mjs "/path/to/Bases View Favorites QA" --enable
+   node scripts/install.mjs "/path/to/Bases Enhancements QA" --enable
    ```
 
 2. Enable the Bases core plugin in that vault. Start a separate Obsidian instance with a separate user data directory and a loopback debugging port:
@@ -50,6 +50,14 @@ npm run test:kanban -- 9237
 ```
 
 These cover missing and blank values, empty lists, zero and unchecked checkboxes, literal text, the per-view toggle, scrolling, live note edits, persistence, cleanup, trusted mouse hover, variable card heights, long-column virtualization, drag placeholders and native moves, cover images, embedded-height sizing, and layout restoration on unload.
+
+To verify native folder-aware note creation without the plugin enabled:
+
+```sh
+npm run test:creation -- 9237
+```
+
+These checks click the native New button across Table, Kanban, Cards, and List views, verify per-view and shared folder filters, and retain native property defaults. All created notes stay in the disposable vault.
 
 ## Compatibility checks
 

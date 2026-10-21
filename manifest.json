@@ -1,9 +1,9 @@
 {
   "id": "bases-view-favorites",
-  "name": "Bases View Favorites",
+  "name": "Bases Enhancements",
   "version": "0.1.0",
   "minAppVersion": "1.14.4",
-  "description": "Star Bases views and switch between them from a horizontal favorites bar.",
+  "description": "Centered favorite tabs and compact Kanban cards for Obsidian Bases.",
   "author": "DannieBGoode",
   "isDesktopOnly": false
 }

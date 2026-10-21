@@ -25,6 +25,6 @@ jobs:
       - uses: actions/upload-artifact@v7.0.2
         if: matrix.os == 'ubuntu-latest'
         with:
-          name: bases-view-favorites
+          name: bases-enhancements
           path: dist/
           if-no-files-found: error

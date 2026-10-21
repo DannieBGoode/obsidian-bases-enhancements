@@ -1,17 +1,21 @@
 {
-  "name": "obsidian-bases-view-favorites",
+  "name": "obsidian-bases-enhancements",
   "version": "0.1.0",
   "private": true,
-  "description": "Star saved Obsidian Bases views and switch between them from centered tabs.",
+  "description": "Centered favorite tabs, compact Kanban cards, and practical improvements for Obsidian Bases.",
   "license": "MIT",
   "author": "DannieBGoode",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DannieBGoode/obsidian-bases-view-favorites.git"
+    "url": "git+https://github.com/DannieBGoode/obsidian-bases-enhancements.git"
   },
-  "bugs": { "url": "https://github.com/DannieBGoode/obsidian-bases-view-favorites/issues" },
-  "homepage": "https://github.com/DannieBGoode/obsidian-bases-view-favorites#readme",
-  "engines": { "node": ">=22" },
+  "bugs": {
+    "url": "https://github.com/DannieBGoode/obsidian-bases-enhancements/issues"
+  },
+  "homepage": "https://github.com/DannieBGoode/obsidian-bases-enhancements#readme",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
@@ -19,7 +23,8 @@
     "check": "npm run typecheck && npm test && npm run build",
     "test:native": "node scripts/native-smoke.mjs",
     "test:kanban": "node scripts/native-smoke.mjs --kanban-only",
-    "install:vault": "node scripts/install.mjs"
+    "install:vault": "node scripts/install.mjs",
+    "test:creation": "node scripts/native-smoke.mjs --creation-only"
   },
   "devDependencies": {
     "@types/node": "24.12.0",
