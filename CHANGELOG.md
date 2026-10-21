@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Hide empty native Kanban fields with a per-view Configure view toggle, collapsing their space and card height.
+- Highlight clickable Kanban cards on hover and keyboard focus.
+
 ## [0.1.0] - 2026-10-21
 
 - Star saved Bases views from the view dropdown or Configure view.

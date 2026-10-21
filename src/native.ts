@@ -6,6 +6,7 @@ export interface NativeController extends QueryController {
   app: App;
   query: { views: FavoriteView[]; file?: { extension: string } } | null;
   viewName: string;
+  view?: unknown;
   viewHeaderEl: HTMLElement;
   viewContainerEl: HTMLElement;
   viewMenu: { toolbarItem: {

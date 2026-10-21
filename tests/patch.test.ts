@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { afterMethod } from '../src/patch';
+import { afterMethod, aroundMethod } from '../src/patch';
 
 test('controller hook preserves this, arguments, return value, and native exceptions', () => {
   const calls: string[] = [];
@@ -38,4 +38,30 @@ test('unloading restores inherited methods without adding an own property', () =
   undo();
   assert.equal(Object.hasOwn(target, 'run'), false);
   assert.equal(target.run(), 'inherited');
+});
+
+test('around hook restores temporary state even when the native method throws', () => {
+  const target = { viewport: 'real', run(fail: boolean) { assert.equal(this.viewport, 'mapped'); if (fail) throw new Error('native'); return 42; } };
+  const undo = aroundMethod(target, 'run', (_self, run) => {
+    const original = target.viewport;
+    target.viewport = 'mapped';
+    try { return run(); } finally { target.viewport = original; }
+  });
+  assert.equal(target.run(false), 42);
+  assert.equal(target.viewport, 'real');
+  assert.throws(() => target.run(true), /native/);
+  assert.equal(target.viewport, 'real');
+  undo();
+});
+
+test('around hook cleanup preserves wrappers installed by another plugin', () => {
+  let decorations = 0;
+  const target = { run(value: number) { return value + 1; } };
+  const undo = aroundMethod(target, 'run', (_self, run) => { decorations++; return run(); });
+  const ours = target.run;
+  target.run = value => ours.call(target, value) * 2;
+  assert.equal(target.run(2), 6);
+  undo();
+  assert.equal(target.run(3), 8);
+  assert.equal(decorations, 1);
 });

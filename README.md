@@ -2,6 +2,10 @@
 
 Star the saved views you use most in Obsidian Bases, then switch between them from a centered tab bar. Favorites belong to each base, so your task board, reading list, and project tracker can each have their own shortcuts.
 
+![Centered favorite tabs above a compact Kanban board in Obsidian, with Board, All projects, and Gallery views](docs/images/starred-views.png)
+
+*Your favorite views, one click away. Empty fields collapse so cards stay compact.*
+
 ## Features
 
 - Star views from the native view dropdown or **Configure view**.
@@ -11,6 +15,7 @@ Star the saved views you use most in Obsidian Bases, then switch between them fr
 - Share favorites across panes while keeping each pane's selected view independent.
 - Use the same favorites in standalone `.base` files and file-backed Markdown embeds.
 - Scroll horizontally when tabs outgrow the available space.
+- Hide empty native Kanban fields and highlight clickable cards on hover.
 
 The native dropdown still lists all views. Unstarring the current view leaves it open, and the tab bar disappears when no views are starred.
 
@@ -62,6 +67,14 @@ You can also run **Bases View Favorites: Toggle star for current Bases view** fr
 | Unstar or reorder a view | Right-click its tab |
 
 Reordering favorites leaves the native view list and default view unchanged.
+
+## Native Kanban cards
+
+**Hide empty fields** is enabled by default for native Kanban views. Open a view's **Configure view** popup to turn it off for that view. Missing values, blank text, and empty lists hide both the field label and placeholder. Zero and unchecked checkboxes stay visible.
+
+<img src="docs/images/configure-board.png" width="300" alt="Configure view popup with Star view and Hide empty fields enabled for the Kanban layout">
+
+The preference is saved as `bvfHideEmptyFields` on the view, independently of whether it is starred. Cards shrink to fit their visible fields, and the column closes the gaps between them. Native rendering, virtualization, and drag-and-drop are retained. Hovering a card highlights its surface and border; keyboard focus remains visible and reduced-motion preferences are respected.
 
 ## How favorites are saved
 

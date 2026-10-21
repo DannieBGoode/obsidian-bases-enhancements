@@ -1,9 +1,11 @@
 import { Menu, Scope, setIcon, ToggleComponent } from 'obsidian';
 import { favoriteOrder, FavoriteView, moveFavorite, setStarred, starredViews } from './favorites';
 import { NativeController } from './native';
+import { HIDE_EMPTY_FIELDS_KEY, hideEmptyFields, KanbanEnhancements } from './kanban';
 
 export class FavoritesBar {
   private readonly bar: HTMLElement;
+  private readonly kanban: KanbanEnhancements;
   private readonly observer: MutationObserver;
   private readonly buttons = new Map<string, HTMLButtonElement>();
   private readonly injected = new Set<HTMLElement>();
@@ -20,6 +22,7 @@ export class FavoritesBar {
 
   constructor(private readonly controller: NativeController) {
     const toolbar = controller.viewHeaderEl.querySelector<HTMLElement>('.bases-toolbar')!;
+    this.kanban = new KanbanEnhancements(controller);
     const doc = toolbar.ownerDocument;
     this.bar = doc.createElement('div');
     this.bar.className = 'bvf-bar';
@@ -45,6 +48,7 @@ export class FavoritesBar {
 
   render(): void {
     if (this.disposed) return;
+    this.kanban.render();
     const favorites = starredViews(this.views);
     const signature = JSON.stringify(favorites.map(view => [view.name, view.type, favoriteOrder(view), this.icon(view)]));
     if (signature !== this.signature) {
@@ -307,6 +311,25 @@ export class FavoritesBar {
         this.injected.add(row);
       }
       this.toggles.get(row)?.setValue(starred);
+      if (view.type === 'kanban') {
+        let emptyRow = page.formEl.querySelector<HTMLElement>('.bvf-config-hide-empty');
+        if (!emptyRow) {
+          emptyRow = page.formEl.createDiv('input-row bvf-config-hide-empty');
+          row.insertAdjacentElement('afterend', emptyRow);
+          emptyRow.createDiv({ cls: 'input-row-label', text: 'Hide empty fields' });
+          const toggle = new ToggleComponent(emptyRow.createDiv('input-row-content'));
+          toggle.setValue(hideEmptyFields(view)).onChange(value => {
+            view.set(HIDE_EMPTY_FIELDS_KEY, value);
+            this.kanban.render();
+          });
+          toggle.toggleEl.setAttribute('aria-label', 'Hide empty fields');
+          this.toggles.set(emptyRow, toggle);
+          this.injected.add(emptyRow);
+        }
+        this.toggles.get(emptyRow)?.setValue(hideEmptyFields(view));
+      } else {
+        page.formEl.querySelector('.bvf-config-hide-empty')?.remove();
+      }
     }
   }
 
@@ -339,6 +362,7 @@ export class FavoritesBar {
     if (this.disposed) return;
     this.disposed = true;
     this.observer.disconnect();
+    this.kanban.destroy();
     this.endDrag();
     for (const cleanup of this.starScopes.values()) cleanup();
     this.starScopes.clear();
