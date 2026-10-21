@@ -6,11 +6,11 @@
   flex-shrink: 0;
 }
 
-.bvf-toolbar:has(> .bvf-bar:not([hidden])) > .bases-toolbar-views-menu {
+.bvf-toolbar.bvf-has-favorites > .bases-toolbar-views-menu {
   order: -2;
 }
 
-.bvf-toolbar:has(> .bvf-bar:not([hidden])) > .bases-toolbar-result-count {
+.bvf-toolbar.bvf-has-favorites > .bases-toolbar-result-count {
   order: -1;
   margin-inline-end: 0;
 }

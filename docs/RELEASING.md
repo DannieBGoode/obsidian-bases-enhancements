@@ -5,8 +5,10 @@
 1. Keep `manifest.json`, `package.json`, and `versions.json` consistent. Obsidian requires a plain semantic version, such as `0.1.0`.
 2. Run `npm ci` and `npm run check`. Follow [TESTING.md](../TESTING.md) to check the exact build in a disposable Obsidian vault.
 3. Commit and push, then push a tag that matches the manifest version exactly, without a `v` prefix.
-4. The release workflow runs the checks and creates a draft GitHub release containing `main.js`, `manifest.json`, and `styles.css`.
-5. Verify the attached files against the build, write release notes, and publish the draft.
+4. The release workflow runs the checks, generates GitHub artifact attestations, and creates a draft GitHub release containing `main.js`, `manifest.json`, and `styles.css`.
+5. Verify the attached files against the build and verify their attestations, write release notes, and publish the draft.
+
+For each downloaded asset, run `gh attestation verify <asset-path> --repo DannieBGoode/obsidian-bases-enhancements`. The attestation should identify `.github/workflows/release.yml` and the intended release tag.
 
 ## Community directory
 

@@ -5,6 +5,7 @@ import { HIDE_EMPTY_FIELDS_KEY, hideEmptyFields, KanbanEnhancements } from './ka
 
 export class FavoritesBar {
   private readonly bar: HTMLElement;
+  private readonly toolbar: HTMLElement;
   private readonly kanban: KanbanEnhancements;
   private readonly observer: MutationObserver;
   private readonly buttons = new Map<string, HTMLButtonElement>();
@@ -22,6 +23,7 @@ export class FavoritesBar {
 
   constructor(private readonly controller: NativeController) {
     const toolbar = controller.viewHeaderEl.querySelector<HTMLElement>('.bases-toolbar')!;
+    this.toolbar = toolbar;
     this.kanban = new KanbanEnhancements(controller);
     const doc = toolbar.ownerDocument;
     this.bar = toolbar.createDiv();
@@ -31,7 +33,7 @@ export class FavoritesBar {
     this.bar.hidden = true;
     controller.viewMenu.toolbarItem.containerEl.insertAdjacentElement('afterend', this.bar);
     toolbar.classList.add('bvf-toolbar');
-    this.cleanups.push(() => toolbar.classList.remove('bvf-toolbar'));
+    this.cleanups.push(() => toolbar.classList.remove('bvf-toolbar', 'bvf-has-favorites'));
     const win = doc.defaultView!;
     this.observer = new win.MutationObserver(() => this.scheduleMenus());
     this.observer.observe(controller.viewMenu.toolbarItem.menu.scrollEl, { childList: true, subtree: true });
@@ -77,6 +79,7 @@ export class FavoritesBar {
       }
     }
     this.bar.hidden = favorites.length === 0;
+    this.toolbar.classList.toggle('bvf-has-favorites', favorites.length > 0);
     const selected = this.controller.viewName;
     for (const [name, button] of this.buttons) {
       const active = name === selected;

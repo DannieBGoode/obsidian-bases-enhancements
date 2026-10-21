@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.1] - 2026-10-21
+
+- Generate GitHub build provenance attestations for every release asset.
+- Replace relational CSS selectors with explicit toolbar state to avoid broad selector invalidation and clear the community directory CSS warning. Favorite visibility, centered layout, and unload cleanup are preserved.
+
 ## [0.1.0] - 2026-10-21
 
 First public release of **Bases Enhancements**.
@@ -14,4 +19,5 @@ First public release of **Bases Enhancements**.
 - Document and verify native folder-aware note creation, inherited properties, and visible unassigned Kanban groups.
 - Keep the original `bases-view-favorites` installation ID so existing installations and command bindings continue to work.
 
+[0.1.1]: https://github.com/DannieBGoode/obsidian-bases-enhancements/releases/tag/0.1.1
 [0.1.0]: https://github.com/DannieBGoode/obsidian-bases-enhancements/releases/tag/0.1.0

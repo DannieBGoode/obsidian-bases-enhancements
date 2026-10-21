@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: actions/setup-node@v7.1.0
@@ -22,6 +24,14 @@ jobs:
       - run: npm run check
       - name: Check release tag
         run: node --input-type=module -e 'import fs from "node:fs"; const manifest = JSON.parse(fs.readFileSync("manifest.json", "utf8")); if (process.env.GITHUB_REF_NAME !== manifest.version) throw new Error("Tag must match manifest version exactly, without a v prefix");'
+      - name: Attest release assets
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: |
+            ${{ github.workspace }}/dist/main.js
+            ${{ github.workspace }}/dist/manifest.json
+            ${{ github.workspace }}/dist/styles.css
+          create-storage-record: false
       - name: Upload release assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
