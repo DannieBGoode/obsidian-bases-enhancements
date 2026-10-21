@@ -93,6 +93,10 @@ Requires **Obsidian 1.14.4 or later** with the **Bases** core plugin enabled. Yo
 
 See the [Obsidian Community listing](https://community.obsidian.md/plugins/bases-view-favorites) for screenshots and release review details. You can also install the plugin directly from GitHub below.
 
+### Install from Community plugins
+
+Open the [community listing](https://community.obsidian.md/plugins/bases-view-favorites), choose **Add to Obsidian**, then **Install** and **Enable**.
+
 ### Download the latest release
 
 1. Open the [latest release](https://github.com/DannieBGoode/obsidian-bases-enhancements/releases/latest) and download `main.js`, `manifest.json`, and `styles.css` from **Assets**.
