@@ -67,6 +67,26 @@ Click **New** to create a note in `Projects/Tasks`, even when your vault's defau
 
 In Obsidian 1.14.4, `file.path.contains(...)` and `file.path.startsWith(...)` narrow results but do not set the new-note folder. Use one of the folder rules above for folder-aware creation. This is native Obsidian behavior and works with Bases Enhancements disabled too.
 
+### Keep new Kanban cards visible
+
+The native **New** button also carries over property defaults from the view's filters, such as `Source == ["Home"]`. Adding a folder rule preserves that behavior.
+
+A ticket can match the filter and still be hidden if it has no `Status` and the board hides the unassigned group. If you use a manual column order, show the unassigned group in the **Group** menu, or include `null` in the view's `groupOrder`:
+
+```yaml
+groupBy:
+  property: Status
+  direction: ASC
+groupOrder:
+  - null
+  - ToDo
+  - In Progress
+  - Waiting
+  - Done
+```
+
+New tickets appear in the unassigned column with their inherited properties intact. Creating a ticket from a column's **New** button also assigns that column's value.
+
 ## Install
 
 Requires **Obsidian 1.14.4 or later** with the **Bases** core plugin enabled. You can use it alongside [Bases Board View](https://github.com/DannieBGoode/obsidian-board-bases-plugin) and other community layouts. Empty-field controls apply to native Kanban views.

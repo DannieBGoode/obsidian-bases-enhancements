@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Document unassigned Kanban groups and verify new-ticket visibility alongside inherited properties.
 - Rename the plugin to Bases Enhancements while keeping its existing installation ID.
 - Document and verify native folder-aware note creation across built-in layouts.
 - Hide empty native Kanban fields with a per-view Configure view toggle, collapsing their space and card height.

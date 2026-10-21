@@ -57,7 +57,7 @@ To verify native folder-aware note creation without the plugin enabled:
 npm run test:creation -- 9237
 ```
 
-These checks click the native New button across Table, Kanban, Cards, and List views, verify per-view and shared folder filters, and retain native property defaults. All created notes stay in the disposable vault.
+These checks click the native New button across Table, Kanban, Cards, and List views, verify per-view and shared folder filters, retain native scalar and list property defaults, and assert that new notes match the originating view and appear in a visible Kanban column. A regression case verifies that showing an unassigned group reveals a previously hidden card without changing its frontmatter. All created notes stay in the disposable vault.
 
 ## Compatibility checks
 

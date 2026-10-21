@@ -326,7 +326,7 @@ async function creationSmoke(vaultName) {
       filters: 'file.ext == "md"',
       views: [
         { name: 'Projects', type: 'table', filters: { and: [`file.inFolder(${JSON.stringify(projects)})`, 'Source == "Home"'] } },
-        { name: 'Work', type: 'kanban', filters: { and: [`file.inFolder(${JSON.stringify(work)})`, 'Source == "Work"'] }, groupBy: { property: 'Status', direction: 'ASC' } },
+        { name: 'Work', type: 'kanban', filters: { and: [`file.inFolder(${JSON.stringify(work)})`, 'Source == ["Work"]'] }, groupBy: { property: 'Status', direction: 'ASC' }, groupOrder: [null, 'ToDo', 'In Progress', 'Waiting', 'Done'], order: ['file.name', 'Next Steps'] },
         { name: 'Reading', type: 'cards', filters: `file.folder == ${JSON.stringify(reading)}` },
         { name: 'Project list', type: 'list', filters: `file.inFolder(${JSON.stringify(projects)})` },
       ]
@@ -342,11 +342,44 @@ async function creationSmoke(vaultName) {
       for (let i = 0; i < 60 && !controller.newItemMenu.newlyCreatedFile; i++) await wait(50);
       const file = controller.newItemMenu.newlyCreatedFile;
       assert(file?.parent?.path === target, `Native New creates ${viewName} notes in its filtered folder`);
-      if (source) assert((await app.vault.read(file)).includes(`Source: ${source}`), `${viewName} creation retains native property defaults`);
+      if (source) {
+        for (let i = 0; i < 60 && JSON.stringify(app.metadataCache.getFileCache(file)?.frontmatter?.Source) !== JSON.stringify(source); i++) await wait(50);
+        const frontmatter = app.metadataCache.getFileCache(file)?.frontmatter;
+        assert(JSON.stringify(frontmatter?.Source) === JSON.stringify(source), `${viewName} creation retains native property defaults and value types`);
+      }
+      for (let i = 0; i < 60 && !controller.results.has(file); i++) await wait(50);
+      assert(controller.results.has(file), `New ${viewName} notes actually match their originating view`);
+      if (controller.view.type === 'kanban') {
+        const onBoard = () => controller.view.columns.some(column => column.group?.entries.some(entry => entry.file === file));
+        for (let i = 0; i < 60 && !onBoard(); i++) await wait(50);
+        assert(onBoard(), 'New Kanban cards appear in a visible column, including cards without Status');
+      }
       controller.newItemMenu.close();
+      return file;
     };
     await create('Projects', projects, 'Home');
-    await create('Work', work, 'Work');
+    const workFile = await create('Work', work, ['Work']);
+    const originalContent = await app.vault.read(workFile);
+    const workView = controller.query.getViewConfig('Work');
+    const onBoard = () => controller.view.columns.some(column => column.group?.entries.some(entry => entry.file === workFile));
+    workView.setGroupOrder(['ToDo', 'In Progress', 'Waiting', 'Done']);
+    for (let i = 0; i < 60 && onBoard(); i++) await wait(50);
+    assert(controller.results.has(workFile) && !onBoard(), 'A hidden unassigned group can hide a correctly filtered card');
+    workView.setGroupOrder([null, 'ToDo', 'In Progress', 'Waiting', 'Done']);
+    for (let i = 0; i < 60 && !onBoard(); i++) await wait(50);
+    assert(onBoard(), 'Showing the unassigned group reveals the new card');
+    assert((await app.vault.read(workFile)) === originalContent, 'Revealing unassigned cards preserves every native property default');
+    const todo = controller.view.columns.find(column => column.group?.key?.toString() === 'ToDo');
+    await controller.view.createNoteInGroup(todo.group);
+    const columnFile = controller.newItemMenu.newlyCreatedFile;
+    for (let i = 0; i < 60 && app.metadataCache.getFileCache(columnFile)?.frontmatter?.Status !== 'ToDo'; i++) await wait(50);
+    const columnFrontmatter = app.metadataCache.getFileCache(columnFile)?.frontmatter;
+    assert(columnFile.parent.path === work, 'Column New retains the filtered folder');
+    assert(JSON.stringify(columnFrontmatter?.Source) === '["Work"]' && columnFrontmatter?.Status === 'ToDo', 'Column New inherits view properties and assigns the chosen column');
+    const inColumn = () => controller.view.columns.some(column => column.group?.key?.toString() === 'ToDo' && column.group.entries.some(entry => entry.file === columnFile));
+    for (let i = 0; i < 60 && !inColumn(); i++) await wait(50);
+    assert(inColumn(), 'Column New cards appear in their chosen visible column');
+    controller.newItemMenu.close();
     await create('Reading', reading);
     await create('Project list', projects);
     await create('Projects', projects, 'Home');
