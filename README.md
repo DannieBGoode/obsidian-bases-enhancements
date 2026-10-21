@@ -57,6 +57,10 @@ Reload Obsidian and enable **Bases View Favorites** under **Settings → Communi
 2. Click the star beside a view, or open **Configure view** and turn on **Star view**.
 3. Click a favorite tab to switch views in the current pane.
 
+<img src="docs/images/star-unstar-views.png" width="800" alt="View dropdown with filled stars for Board, All projects, and Gallery, an outlined star for List, and matching favorite tabs above the board">
+
+Click a filled star to unstar a view, or an outlined star to add it to the tab bar.
+
 You can also run **Bases View Favorites: Toggle star for current Bases view** from the command palette.
 
 | Action | Control |
