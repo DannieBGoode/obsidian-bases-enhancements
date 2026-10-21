@@ -1,0 +1,9 @@
+{
+  "id": "bases-view-favorites",
+  "name": "Bases View Favorites",
+  "version": "0.1.0",
+  "minAppVersion": "1.14.4",
+  "description": "Star Bases views and switch between them from a horizontal favorites bar.",
+  "author": "DannieBGoode",
+  "isDesktopOnly": false
+}

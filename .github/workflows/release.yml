@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags: ['*']
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Check release tag
+        run: node --input-type=module -e 'import fs from "node:fs"; const manifest = JSON.parse(fs.readFileSync("manifest.json", "utf8")); if (process.env.GITHUB_REF_NAME !== manifest.version) throw new Error("Tag must match manifest version exactly, without a v prefix");'
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" --generate-notes --draft
+          fi
+          gh release upload "$GITHUB_REF_NAME" dist/main.js dist/manifest.json dist/styles.css --clobber

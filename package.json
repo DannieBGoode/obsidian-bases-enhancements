@@ -1,0 +1,29 @@
+{
+  "name": "obsidian-bases-view-favorites",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Star saved Obsidian Bases views and switch between them from centered tabs.",
+  "license": "MIT",
+  "author": "DannieBGoode",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DannieBGoode/obsidian-bases-view-favorites.git"
+  },
+  "bugs": { "url": "https://github.com/DannieBGoode/obsidian-bases-view-favorites/issues" },
+  "homepage": "https://github.com/DannieBGoode/obsidian-bases-view-favorites#readme",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node scripts/test.mjs",
+    "check": "npm run typecheck && npm test && npm run build",
+    "test:native": "node scripts/native-smoke.mjs",
+    "install:vault": "node scripts/install.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "24.12.0",
+    "esbuild": "0.25.12",
+    "obsidian": "1.12.3",
+    "typescript": "5.9.3"
+  }
+}
