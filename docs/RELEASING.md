@@ -10,7 +10,7 @@
 
 ## Community directory
 
-Manage the listing at [Obsidian Community](https://community.obsidian.md/account/plugins). New entries are submitted there and reviewed by Obsidian before they appear in Community plugins. Submission does not make this a first-party Obsidian plugin.
+Manage the listing at [Obsidian Community](https://community.obsidian.md/account/plugins). Publish new entries there, then check the release scan results on the management page. Obsidian checks the manifest, release assets, source code, and build; a public listing alone does not mean installation is available. Submission does not make this a first-party Obsidian plugin.
 
 - Repository: `https://github.com/DannieBGoode/obsidian-bases-enhancements`
 - Name: **Bases Enhancements**

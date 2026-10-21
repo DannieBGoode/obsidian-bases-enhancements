@@ -91,7 +91,7 @@ New tickets appear in the unassigned column with their inherited properties inta
 
 Requires **Obsidian 1.14.4 or later** with the **Bases** core plugin enabled. You can use it alongside [Bases Board View](https://github.com/DannieBGoode/obsidian-board-bases-plugin) and other community layouts. Empty-field controls apply to native Kanban views.
 
-Bases Enhancements is not listed in Obsidian's Community plugins directory yet.
+See the [Obsidian Community listing](https://community.obsidian.md/plugins/bases-view-favorites) for screenshots and release review details. You can also install the plugin directly from GitHub below.
 
 ### Download the latest release
 
